@@ -95,12 +95,42 @@ In this case, make sure that the referenced directory is equal to ${STORAGE_DIR}
 
 `$ sudo STORAGE_DIR=${STORAGE_DIR} bash ./create-vms.sh`
 
-# Log into virtual machines
+Wait for a minute or two to make sure the machines have been properly initialized...
+
+# Set static IP addresses properly
+
+Using the running machines, we can now extract their MAC addresses in order to configure DHCP to assign static IP's.
+
+```
+$ bash reset-network.sh
+$ bash ipsetup.sh
+$ bash reset-network.sh
+```
+
+Now that the DHCP entries have been setup, let's restart the machines in order to pick up the IP assignments properly.
+```
+$ bash kill-vms.sh
+$ bash start-vms.sh
+```
+
+# Log into virtual 
+
+There are two ways to log into a VM. In both cases, the credentials are as follows:
+
+**username**=ubuntu, **password**=testing123
+
+## Console
 
 You can login to any of the virtual machines using:
 
 `$ virsh console [vm]`
 
-**username**=ubuntu, **password**=kubvm123
-
 To exit the console, use <kbd>ctrl</kbd> + <kbd>]</kbd>
+
+## SSH
+
+To do this you must know the IP address:
+
+`$ ssh ubuntu@192.168.122.10`
+
+

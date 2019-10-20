@@ -1,0 +1,1 @@
+machines=( kubmaster kubnode1 )

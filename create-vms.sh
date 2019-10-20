@@ -1,4 +1,6 @@
 #!/bin/bash
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source ./cluster-config.sh
 
 if [[ -z ${STORAGE_DIR} ]]; then
     echo STORAGE_DIR variable must be defined
@@ -56,7 +58,7 @@ function createiso {
     echo "Creating iso for ${VM_NAME}"
     cat <<EOT >> temp/${VM_NAME}-config.txt
 #cloud-config
-password: kubvm123
+password: testing123
 chpasswd: { expire: False }
 ssh_pwauth: True
 hostname: ${VM_NAME}
@@ -81,6 +83,7 @@ function installvm {
             --memory ${MEMORY} \
             --disk ${STORAGE_DIR}/${VM_NAME}.ovl,device=disk,bus=virtio \
             --disk ${STORAGE_DIR}/${VM_NAME}.iso,device=cdrom \
+            --filesystem source=${SCRIPT_DIR},target=/host,type=mount,mode=passthrough \
             --os-type linux \
             --os-variant ubuntu18.04 \
             --virt-type kvm \
@@ -92,8 +95,15 @@ function installvm {
 
 prepare
 downloadBaseImage
-installvm kubmaster 2048
-installvm kubnode1 2048
+
+for machine in "${machines[@]}"
+  do
+  :   
+  
+  echo "Creating ${machine}"
+  installvm ${machine} 2048
+
+  done
 
 echo "******************************"
 virsh list --all
